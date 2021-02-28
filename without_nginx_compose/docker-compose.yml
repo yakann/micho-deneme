@@ -1,0 +1,62 @@
+version: "3.7"
+#/home/michopython/.local/bin/gunicorn
+#/home/michopython/.local/lib/python3.8/site-packages/gunicorn
+services:
+  gunicorn:
+    build:
+      context: .
+    command: bash -c "python manage.py makemigrations &&
+                      python manage.py migrate &&
+                      python manage.py runserver 0.0.0.0:8000"
+    depends_on:
+      - db
+    volumes:
+      - static_volume:/home/michopython/erp/static
+      - media_volume:/home/michopython/erp/media
+    ports:
+      - "8000:8000"
+
+  db:
+    image: mysql:8
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: Novumare.2019
+      MYSQL_USER: sunucu
+      MYSQL_PASSWORD: Novumare.2019
+      MYSQL_DATABASE: entechsemar
+    restart: always
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  # db:
+  #   image: mysql:5.7
+  #   command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+  #   ports:
+  #     - "3306:3306"
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: root
+  #     MYSQL_DATABASE: todoList
+  #     MYSQL_USER: user
+  #     MYSQL_PASSWORD: password
+  #     TZ: 'Asia/Tokyo'
+  #   volumes:
+  #     - ./mysql:/var/lib/mysql
+  #     - ./sql:/docker-entrypoint-initdb.d
+
+  # db:
+  #   image: mysql:8
+  #   ports:
+  #     - "3306:3306"
+  #   environment:
+  #     - MYSQL_ROOT_PASSWORD='some_password'
+  #   volumes:
+  #     - ./mysql/config:/etc/mysql/conf.d
+  #     - /tmp/app/mysqld:/var/run/mysqld
+  #     - ./db:/var/lib/mysql
+  #     - db_data:/mysql/
+volumes:
+  mysql_data:
+  static_volume:
+  media_volume:
